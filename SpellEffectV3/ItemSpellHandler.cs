@@ -1,4 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
+using Renci.SshNet.Security;
+using Stump.DofusProtocol.D2oClasses;
 using Stump.Server.WorldServer.Database.Items.Templates;
 using Stump.Server.WorldServer.Game.Effects;
 using Stump.Server.WorldServer.Game.Effects.Instances;
@@ -30,6 +32,7 @@ namespace SpellEffectV3
         public static MySqlConn mysqlCon;
         List<Stump.DofusProtocol.D2oClasses.EffectInstance> Item_templates_Effects;
         List<EffectBase> Item_pets_Effects;
+        List<StatsToModifyTemplate> listEffectsTuple;
         int ItemTemplateEffectList_SelectedIndex = -1;
         int PetTemplateEffectList_SelectedIndex = -1;
 
@@ -56,6 +59,8 @@ namespace SpellEffectV3
                 items_pets_EffectEnumCB.Items.Add(current);
                 spells_EffectEnumCB.Items.Add(current);
                 itemsSets_templates_EffectEnumCB.Items.Add(current);
+                cmbPreviousEffect.Items.Add(current);
+                cmbNewEffect.Items.Add(current);
             }
 
             foreach(var current in Enum.GetNames(typeof(Stump.DofusProtocol.Enums.SpellShapeEnum)))
@@ -63,6 +68,8 @@ namespace SpellEffectV3
 
             spells_critical_CB.SelectedIndex = 0;
             spells_LevelCB.SelectedIndex = 0;
+
+            listEffectsTuple = new List<StatsToModifyTemplate>();
         }
 
         #region items_templates
@@ -1093,6 +1100,235 @@ namespace SpellEffectV3
         private void CloseBtn_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        #region ItemsEditor
+        private void btnAddItemToModify_Click(object sender, EventArgs e) {
+            int value;
+            if(txtbItemToModifyId.Text == "" || !Int32.TryParse(txtbItemToModifyId.Text, out value)) {
+                MessageBox.Show("Please type a number first.");
+                return;
+            }
+
+            listItemsId.Items.Add(value);
+            listItemsId.SelectedIndex = listItemsId.Items.Count - 1;
+        }
+
+        private void btnRemoveItemToModify_Click(object sender, EventArgs e) {
+            if (listItemsId.SelectedIndex > -1) {
+                int index = listItemsId.SelectedIndex;
+                listItemsId.Items.RemoveAt(index);
+            }
+        }
+
+        private void listStatsToChange_SelectedIndexChanged(object sender, EventArgs e) {
+            int index = listStatsToChange.SelectedIndex;
+            if (index < 0)
+                return;
+
+            var item = listEffectsTuple[index];
+
+            cmbPreviousEffect.SelectedItem = (Stump.DofusProtocol.Enums.EffectsEnum)item.previousEffect;
+            chbChangeEffect.Checked = item.bChangeEffect;
+            cmbNewEffect.Enabled = item.bChangeEffect;
+            cmbNewEffect.SelectedItem = (Stump.DofusProtocol.Enums.EffectsEnum)item.newEffect;
+
+            chbKeepValue.Checked = item.bKeepValue;
+            chbAddToValue.Checked = item.bAddValue;
+            txtbAddValue.Text = item.addedValue.ToString();
+            txtbAddValue.Enabled = item.bAddValue;
+        }
+
+        private void btnAddStatToModify_Click(object sender, EventArgs e) {
+            var newItem = new StatsToModifyTemplate {
+                previousEffect = 2,
+                bChangeEffect = false,
+                newEffect = 2,
+                bKeepValue = true,
+                bAddValue = false,
+                addedValue = 0
+            };
+
+            listEffectsTuple.Add(newItem);
+            listStatsToChange.Items.Add((Stump.DofusProtocol.Enums.EffectsEnum)newItem.previousEffect);
+            listStatsToChange.SelectedIndex = listStatsToChange.Items.Count - 1;
+        }
+
+        private void btnRemoveStatToModify_Click(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex > -1) {
+                int index = listStatsToChange.SelectedIndex;
+                listStatsToChange.Items.RemoveAt(index);
+                listEffectsTuple.RemoveAt(index);
+            }
+        }
+
+        private void cmbPreviousEffect_SelectedIndexChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            string selectedItem = cmbPreviousEffect.SelectedItem.ToString();
+            int selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
+            var t = listEffectsTuple[listStatsToChange.SelectedIndex];
+            listEffectsTuple[listStatsToChange.SelectedIndex].previousEffect = selectedEffectEnumID;
+
+            if (listEffectsTuple[listStatsToChange.SelectedIndex].bChangeEffect)
+                listStatsToChange.Items[listStatsToChange.SelectedIndex] = selectedItem + " -> " + cmbNewEffect.SelectedItem;
+            else
+                listStatsToChange.Items[listStatsToChange.SelectedIndex] = selectedItem;
+        }
+
+        private void cmbNewEffect_SelectedIndexChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            string selectedItem = cmbNewEffect.SelectedItem.ToString();
+            int selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
+            var t = listEffectsTuple[listStatsToChange.SelectedIndex];
+            listEffectsTuple[listStatsToChange.SelectedIndex].newEffect = selectedEffectEnumID;
+
+            if (listEffectsTuple[listStatsToChange.SelectedIndex].bChangeEffect)
+                listStatsToChange.Items[listStatsToChange.SelectedIndex] = cmbPreviousEffect.SelectedItem + " -> " + selectedItem;
+        }
+
+        private void cmbPreviousEffect_TextUpdate(object sender, EventArgs e) {
+            cmbPreviousEffect.DroppedDown = true;
+        }
+
+        private void cmbNewEffect_TextUpdate(object sender, EventArgs e) {
+            cmbNewEffect.DroppedDown = true;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e) {
+            var dict = listEffectsTuple.ToDictionary(obj => obj.previousEffect);
+            foreach(int itemId in listItemsId.Items) {
+                var templates = GetEffectInstance(itemId);
+                if (templates is null) {
+                    MessageBox.Show("Could not find id: " + itemId + "\nProgram will however continue.");
+                    continue;
+                }
+
+                for(int i = 0; i < templates.Count; i++) {
+                    if (!dict.ContainsKey((int)templates[i].EffectId)) {
+                        continue;
+                    }
+
+                    var item = dict[(int)templates[i].EffectId];
+                    if (item.bChangeEffect)
+                        templates[i].EffectId = (uint)item.newEffect;
+                    if (!item.bKeepValue) {
+                        ((EffectInstanceDice)templates[i]).DiceNum = 0;
+                        ((EffectInstanceDice)templates[i]).DiceSide = 0;
+                    }
+                    if(item.bAddValue) {
+                        ((EffectInstanceDice)templates[i]).DiceNum += (uint)item.addedValue;
+                        ((EffectInstanceDice)templates[i]).DiceSide += (uint)item.addedValue;
+                    }
+                }
+
+                var toBinary = FormatterExtensions.ToBinary(templates);
+                mysqlCon.cmd.CommandText = "update items_templates set PossibleEffectsBin = ?hexToStr where Id = '" + itemId + "'";
+                MySqlParameter fileContentParameter = new MySqlParameter("?hexToStr", MySqlDbType.Blob, toBinary.Length);
+                fileContentParameter.Value = toBinary;
+                mysqlCon.cmd.Parameters.Add(fileContentParameter);
+                mysqlCon.reader = mysqlCon.cmd.ExecuteReader();
+                mysqlCon.cmd.Parameters.Remove(fileContentParameter);
+                mysqlCon.reader.Close();
+            }
+
+            btnSave.BackColor = Color.Green;
+
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(1000);
+
+                Application.OpenForms["ItemSpellHandler"].BeginInvoke((Action)(() => {
+                    btnSave.BackColor = Color.LightGray; ;
+                }));
+            })).Start();
+        }
+
+        private List<Stump.DofusProtocol.D2oClasses.EffectInstance> GetEffectInstance(int itemId) {
+
+            mysqlCon.cmd.CommandText = "select PossibleEffectsBin from items_templates where Id = '" + itemId + "'";
+            List<Stump.DofusProtocol.D2oClasses.EffectInstance> template = null;
+            try {
+                mysqlCon.reader = mysqlCon.cmd.ExecuteReader();
+                bool isDataFound = mysqlCon.reader.Read();
+                if (isDataFound) {
+                    var possibleEffectBin = mysqlCon.reader[0];
+                    mysqlCon.reader.Close();
+                    if (possibleEffectBin.ToString() == "") {
+                        items_templates_effectList.Items.Clear();
+                        template = new List<Stump.DofusProtocol.D2oClasses.EffectInstance>();
+                    }
+                    else {
+                        template = FormatterExtensions.ToObject<List<Stump.DofusProtocol.D2oClasses.EffectInstance>>((byte[])possibleEffectBin);
+                    }
+                }
+
+                mysqlCon.reader.Close();
+                mysqlCon.reader = null;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show("Erreur lors du traitement.\n" + ex);
+                mysqlCon.reader.Close();
+                mysqlCon.reader = null;
+            }
+            return template;
+        }
+
+        private void txtbItemToModifyId_KeyPressed(object sender, KeyPressEventArgs e) {
+            if(e.KeyChar == (char)Keys.Enter) {
+                btnAddItemToModify_Click(sender, new EventArgs());
+                e.Handled = true;
+            }
+        }
+
+        private void chbChangeEffect_CheckedChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            cmbNewEffect.Enabled = chbChangeEffect.Checked;
+            listEffectsTuple[listStatsToChange.SelectedIndex].bChangeEffect = chbChangeEffect.Checked;
+            cmbPreviousEffect_SelectedIndexChanged(sender, e);
+        }
+
+        private void chbKeepValue_CheckedChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            listEffectsTuple[listStatsToChange.SelectedIndex].bKeepValue = chbKeepValue.Checked;
+        }
+
+        private void chbAddToValue_CheckedChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            txtbAddValue.Enabled = chbAddToValue.Checked;
+            listEffectsTuple[listStatsToChange.SelectedIndex].bAddValue = chbAddToValue.Checked;
+        }
+
+        private void txtbAddValue_TextChanged(object sender, EventArgs e) {
+            if (listStatsToChange.SelectedIndex < 0)
+                return;
+
+            int value;
+            if(!Int32.TryParse(txtbAddValue.Text, out value)) {
+                MessageBox.Show("Please insert a number.");
+                txtbAddValue.Text = "0";
+                return;
+            }
+
+            listEffectsTuple[listStatsToChange.SelectedIndex].addedValue = value;
+        }
+        #endregion
+
+        class StatsToModifyTemplate {
+            public int previousEffect { get; set; }
+            public bool bChangeEffect;
+            public int newEffect;
+            public bool bKeepValue;
+            public bool bAddValue;
+            public int addedValue;
         }
     }
 }

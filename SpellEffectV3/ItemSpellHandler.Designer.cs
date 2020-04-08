@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.items_templates_tab = new System.Windows.Forms.TabPage();
             this.items_templates_controlsPanel = new System.Windows.Forms.Panel();
@@ -206,6 +207,7 @@
             this.items_sets_tab = new System.Windows.Forms.TabPage();
             this.itemsSetsAddNewRowBtn = new System.Windows.Forms.Button();
             this.itemsSets_templates_controlsPanel = new System.Windows.Forms.Panel();
+            this.label57 = new System.Windows.Forms.Label();
             this.itemsSets_templates_Bonus_Rank_CB = new System.Windows.Forms.ComboBox();
             this.label100 = new System.Windows.Forms.Label();
             this.itemsSets_templates_upBtn = new System.Windows.Forms.Button();
@@ -225,13 +227,32 @@
             this.label86 = new System.Windows.Forms.Label();
             this.items_sets_ID_TB = new System.Windows.Forms.TextBox();
             this.label43 = new System.Windows.Forms.Label();
+            this.tabItemsEditor = new System.Windows.Forms.TabPage();
+            this.txtbAddValue = new System.Windows.Forms.TextBox();
+            this.chbKeepValue = new System.Windows.Forms.CheckBox();
+            this.chbAddToValue = new System.Windows.Forms.CheckBox();
+            this.chbChangeEffect = new System.Windows.Forms.CheckBox();
+            this.txtbItemToModifyId = new System.Windows.Forms.TextBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.cmbNewEffect = new System.Windows.Forms.ComboBox();
+            this.cmbPreviousEffect = new System.Windows.Forms.ComboBox();
+            this.label81 = new System.Windows.Forms.Label();
+            this.label79 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
+            this.btnRemoveStatToModify = new System.Windows.Forms.Button();
+            this.btnAddStatToModify = new System.Windows.Forms.Button();
+            this.listStatsToChange = new System.Windows.Forms.ListBox();
+            this.btnRemoveItemToModify = new System.Windows.Forms.Button();
+            this.btnAddItemToModify = new System.Windows.Forms.Button();
+            this.listItemsId = new System.Windows.Forms.ListBox();
             this.PLeftBorder = new System.Windows.Forms.Panel();
             this.PRightBorder = new System.Windows.Forms.Panel();
             this.PTitle = new System.Windows.Forms.Panel();
             this.LTitle = new System.Windows.Forms.Label();
             this.CloseBtn = new System.Windows.Forms.Button();
             this.PFooterBorder = new System.Windows.Forms.Panel();
-            this.label57 = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1.SuspendLayout();
             this.items_templates_tab.SuspendLayout();
             this.items_templates_controlsPanel.SuspendLayout();
@@ -241,6 +262,7 @@
             this.spells_controlsPanel.SuspendLayout();
             this.items_sets_tab.SuspendLayout();
             this.itemsSets_templates_controlsPanel.SuspendLayout();
+            this.tabItemsEditor.SuspendLayout();
             this.PTitle.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -250,6 +272,7 @@
             this.tabControl1.Controls.Add(this.items_pets_tab);
             this.tabControl1.Controls.Add(this.spells_tab);
             this.tabControl1.Controls.Add(this.items_sets_tab);
+            this.tabControl1.Controls.Add(this.tabItemsEditor);
             this.tabControl1.Location = new System.Drawing.Point(6, 31);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -1946,6 +1969,15 @@
             this.itemsSets_templates_controlsPanel.TabIndex = 58;
             this.itemsSets_templates_controlsPanel.Visible = false;
             // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(132, 13);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(37, 13);
+            this.label57.TabIndex = 62;
+            this.label57.Text = "item(s)";
+            // 
             // itemsSets_templates_Bonus_Rank_CB
             // 
             this.itemsSets_templates_Bonus_Rank_CB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2116,6 +2148,201 @@
             this.label43.TabIndex = 0;
             this.label43.Text = "ID";
             // 
+            // tabItemsEditor
+            // 
+            this.tabItemsEditor.Controls.Add(this.txtbAddValue);
+            this.tabItemsEditor.Controls.Add(this.chbKeepValue);
+            this.tabItemsEditor.Controls.Add(this.chbAddToValue);
+            this.tabItemsEditor.Controls.Add(this.chbChangeEffect);
+            this.tabItemsEditor.Controls.Add(this.txtbItemToModifyId);
+            this.tabItemsEditor.Controls.Add(this.btnSave);
+            this.tabItemsEditor.Controls.Add(this.cmbNewEffect);
+            this.tabItemsEditor.Controls.Add(this.cmbPreviousEffect);
+            this.tabItemsEditor.Controls.Add(this.label81);
+            this.tabItemsEditor.Controls.Add(this.label79);
+            this.tabItemsEditor.Controls.Add(this.label77);
+            this.tabItemsEditor.Controls.Add(this.btnRemoveStatToModify);
+            this.tabItemsEditor.Controls.Add(this.btnAddStatToModify);
+            this.tabItemsEditor.Controls.Add(this.listStatsToChange);
+            this.tabItemsEditor.Controls.Add(this.btnRemoveItemToModify);
+            this.tabItemsEditor.Controls.Add(this.btnAddItemToModify);
+            this.tabItemsEditor.Controls.Add(this.listItemsId);
+            this.tabItemsEditor.Location = new System.Drawing.Point(4, 22);
+            this.tabItemsEditor.Name = "tabItemsEditor";
+            this.tabItemsEditor.Padding = new System.Windows.Forms.Padding(3);
+            this.tabItemsEditor.Size = new System.Drawing.Size(824, 309);
+            this.tabItemsEditor.TabIndex = 4;
+            this.tabItemsEditor.Text = "Multiple Items Editor";
+            this.tabItemsEditor.UseVisualStyleBackColor = true;
+            // 
+            // txtbAddValue
+            // 
+            this.txtbAddValue.Location = new System.Drawing.Point(593, 134);
+            this.txtbAddValue.Name = "txtbAddValue";
+            this.txtbAddValue.Size = new System.Drawing.Size(100, 20);
+            this.txtbAddValue.TabIndex = 69;
+            this.txtbAddValue.TextChanged += new System.EventHandler(this.txtbAddValue_TextChanged);
+            // 
+            // chbKeepValue
+            // 
+            this.chbKeepValue.AutoSize = true;
+            this.chbKeepValue.Location = new System.Drawing.Point(432, 111);
+            this.chbKeepValue.Name = "chbKeepValue";
+            this.chbKeepValue.Size = new System.Drawing.Size(116, 17);
+            this.chbKeepValue.TabIndex = 68;
+            this.chbKeepValue.Text = "Keep original value";
+            this.chbKeepValue.UseVisualStyleBackColor = true;
+            this.chbKeepValue.CheckedChanged += new System.EventHandler(this.chbKeepValue_CheckedChanged);
+            // 
+            // chbAddToValue
+            // 
+            this.chbAddToValue.AutoSize = true;
+            this.chbAddToValue.Location = new System.Drawing.Point(432, 134);
+            this.chbAddToValue.Name = "chbAddToValue";
+            this.chbAddToValue.Size = new System.Drawing.Size(86, 17);
+            this.chbAddToValue.TabIndex = 66;
+            this.chbAddToValue.Text = "Add to value";
+            this.chbAddToValue.UseVisualStyleBackColor = true;
+            this.chbAddToValue.CheckedChanged += new System.EventHandler(this.chbAddToValue_CheckedChanged);
+            // 
+            // chbChangeEffect
+            // 
+            this.chbChangeEffect.AutoSize = true;
+            this.chbChangeEffect.Location = new System.Drawing.Point(432, 61);
+            this.chbChangeEffect.Name = "chbChangeEffect";
+            this.chbChangeEffect.Size = new System.Drawing.Size(94, 17);
+            this.chbChangeEffect.TabIndex = 65;
+            this.chbChangeEffect.Text = "Change Effect";
+            this.chbChangeEffect.UseVisualStyleBackColor = true;
+            this.chbChangeEffect.CheckedChanged += new System.EventHandler(this.chbChangeEffect_CheckedChanged);
+            // 
+            // txtbItemToModifyId
+            // 
+            this.txtbItemToModifyId.Location = new System.Drawing.Point(37, 266);
+            this.txtbItemToModifyId.Name = "txtbItemToModifyId";
+            this.txtbItemToModifyId.Size = new System.Drawing.Size(53, 20);
+            this.txtbItemToModifyId.TabIndex = 64;
+            this.txtbItemToModifyId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtbItemToModifyId_KeyPressed);
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackColor = System.Drawing.Color.LightGray;
+            this.btnSave.Location = new System.Drawing.Point(523, 250);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(183, 39);
+            this.btnSave.TabIndex = 63;
+            this.btnSave.Text = "Sauveguarder";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // cmbNewEffect
+            // 
+            this.cmbNewEffect.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.cmbNewEffect.FormattingEnabled = true;
+            this.cmbNewEffect.Location = new System.Drawing.Point(531, 59);
+            this.cmbNewEffect.Name = "cmbNewEffect";
+            this.cmbNewEffect.Size = new System.Drawing.Size(207, 21);
+            this.cmbNewEffect.TabIndex = 62;
+            this.cmbNewEffect.SelectedIndexChanged += new System.EventHandler(this.cmbNewEffect_SelectedIndexChanged);
+            this.cmbNewEffect.TextUpdate += new System.EventHandler(this.cmbNewEffect_TextUpdate);
+            // 
+            // cmbPreviousEffect
+            // 
+            this.cmbPreviousEffect.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.cmbPreviousEffect.FormattingEnabled = true;
+            this.cmbPreviousEffect.Location = new System.Drawing.Point(531, 32);
+            this.cmbPreviousEffect.Name = "cmbPreviousEffect";
+            this.cmbPreviousEffect.Size = new System.Drawing.Size(207, 21);
+            this.cmbPreviousEffect.TabIndex = 60;
+            this.cmbPreviousEffect.SelectedIndexChanged += new System.EventHandler(this.cmbPreviousEffect_SelectedIndexChanged);
+            this.cmbPreviousEffect.TextUpdate += new System.EventHandler(this.cmbPreviousEffect_TextUpdate);
+            // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Location = new System.Drawing.Point(447, 35);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(79, 13);
+            this.label81.TabIndex = 59;
+            this.label81.Text = "Previous Effect";
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label79.Location = new System.Drawing.Point(217, 15);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(105, 17);
+            this.label79.TabIndex = 12;
+            this.label79.Text = "Stats to modify:";
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label77.Location = new System.Drawing.Point(6, 15);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(106, 17);
+            this.label77.TabIndex = 11;
+            this.label77.Text = "Items to modify:";
+            // 
+            // btnRemoveStatToModify
+            // 
+            this.btnRemoveStatToModify.Location = new System.Drawing.Point(250, 266);
+            this.btnRemoveStatToModify.Name = "btnRemoveStatToModify";
+            this.btnRemoveStatToModify.Size = new System.Drawing.Size(24, 23);
+            this.btnRemoveStatToModify.TabIndex = 8;
+            this.btnRemoveStatToModify.Text = "-";
+            this.btnRemoveStatToModify.UseVisualStyleBackColor = true;
+            this.btnRemoveStatToModify.Click += new System.EventHandler(this.btnRemoveStatToModify_Click);
+            // 
+            // btnAddStatToModify
+            // 
+            this.btnAddStatToModify.Location = new System.Drawing.Point(220, 266);
+            this.btnAddStatToModify.Name = "btnAddStatToModify";
+            this.btnAddStatToModify.Size = new System.Drawing.Size(24, 23);
+            this.btnAddStatToModify.TabIndex = 9;
+            this.btnAddStatToModify.Text = "+";
+            this.btnAddStatToModify.UseVisualStyleBackColor = true;
+            this.btnAddStatToModify.Click += new System.EventHandler(this.btnAddStatToModify_Click);
+            // 
+            // listStatsToChange
+            // 
+            this.listStatsToChange.FormattingEnabled = true;
+            this.listStatsToChange.Location = new System.Drawing.Point(220, 35);
+            this.listStatsToChange.Name = "listStatsToChange";
+            this.listStatsToChange.Size = new System.Drawing.Size(170, 225);
+            this.listStatsToChange.TabIndex = 10;
+            this.listStatsToChange.SelectedIndexChanged += new System.EventHandler(this.listStatsToChange_SelectedIndexChanged);
+            // 
+            // btnRemoveItemToModify
+            // 
+            this.btnRemoveItemToModify.Location = new System.Drawing.Point(96, 266);
+            this.btnRemoveItemToModify.Name = "btnRemoveItemToModify";
+            this.btnRemoveItemToModify.Size = new System.Drawing.Size(24, 23);
+            this.btnRemoveItemToModify.TabIndex = 5;
+            this.btnRemoveItemToModify.Text = "-";
+            this.btnRemoveItemToModify.UseVisualStyleBackColor = true;
+            this.btnRemoveItemToModify.Click += new System.EventHandler(this.btnRemoveItemToModify_Click);
+            // 
+            // btnAddItemToModify
+            // 
+            this.btnAddItemToModify.Location = new System.Drawing.Point(7, 266);
+            this.btnAddItemToModify.Name = "btnAddItemToModify";
+            this.btnAddItemToModify.Size = new System.Drawing.Size(24, 23);
+            this.btnAddItemToModify.TabIndex = 6;
+            this.btnAddItemToModify.Text = "+";
+            this.btnAddItemToModify.UseVisualStyleBackColor = true;
+            this.btnAddItemToModify.Click += new System.EventHandler(this.btnAddItemToModify_Click);
+            // 
+            // listItemsId
+            // 
+            this.listItemsId.FormattingEnabled = true;
+            this.listItemsId.Location = new System.Drawing.Point(7, 35);
+            this.listItemsId.Name = "listItemsId";
+            this.listItemsId.Size = new System.Drawing.Size(170, 225);
+            this.listItemsId.TabIndex = 7;
+            // 
             // PLeftBorder
             // 
             this.PLeftBorder.BackColor = System.Drawing.Color.DarkSlateBlue;
@@ -2179,14 +2406,15 @@
             this.PFooterBorder.Size = new System.Drawing.Size(843, 3);
             this.PFooterBorder.TabIndex = 36;
             // 
-            // label57
+            // contextMenuStrip1
             // 
-            this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(132, 13);
-            this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(37, 13);
-            this.label57.TabIndex = 62;
-            this.label57.Text = "item(s)";
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(61, 4);
             // 
             // ItemSpellHandler
             // 
@@ -2222,6 +2450,8 @@
             this.items_sets_tab.PerformLayout();
             this.itemsSets_templates_controlsPanel.ResumeLayout(false);
             this.itemsSets_templates_controlsPanel.PerformLayout();
+            this.tabItemsEditor.ResumeLayout(false);
+            this.tabItemsEditor.PerformLayout();
             this.PTitle.ResumeLayout(false);
             this.PTitle.PerformLayout();
             this.ResumeLayout(false);
@@ -2434,6 +2664,26 @@
         private System.Windows.Forms.Button CloseBtn;
         private System.Windows.Forms.Panel PFooterBorder;
         private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.TabPage tabItemsEditor;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.Button btnRemoveStatToModify;
+        private System.Windows.Forms.Button btnAddStatToModify;
+        private System.Windows.Forms.ListBox listStatsToChange;
+        private System.Windows.Forms.Button btnRemoveItemToModify;
+        private System.Windows.Forms.Button btnAddItemToModify;
+        private System.Windows.Forms.ListBox listItemsId;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.ComboBox cmbNewEffect;
+        private System.Windows.Forms.ComboBox cmbPreviousEffect;
+        private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.TextBox txtbItemToModifyId;
+        private System.Windows.Forms.CheckBox chbChangeEffect;
+        private System.Windows.Forms.TextBox txtbAddValue;
+        private System.Windows.Forms.CheckBox chbKeepValue;
+        private System.Windows.Forms.CheckBox chbAddToValue;
     }
 }
 
