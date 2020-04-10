@@ -253,6 +253,8 @@
             this.PFooterBorder = new System.Windows.Forms.Panel();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btnAddRange = new System.Windows.Forms.Button();
+            this.btnClearItems = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.items_templates_tab.SuspendLayout();
             this.items_templates_controlsPanel.SuspendLayout();
@@ -2150,6 +2152,8 @@
             // 
             // tabItemsEditor
             // 
+            this.tabItemsEditor.Controls.Add(this.btnClearItems);
+            this.tabItemsEditor.Controls.Add(this.btnAddRange);
             this.tabItemsEditor.Controls.Add(this.txtbAddValue);
             this.tabItemsEditor.Controls.Add(this.chbKeepValue);
             this.tabItemsEditor.Controls.Add(this.chbAddToValue);
@@ -2218,7 +2222,7 @@
             // 
             // txtbItemToModifyId
             // 
-            this.txtbItemToModifyId.Location = new System.Drawing.Point(37, 266);
+            this.txtbItemToModifyId.Location = new System.Drawing.Point(9, 288);
             this.txtbItemToModifyId.Name = "txtbItemToModifyId";
             this.txtbItemToModifyId.Size = new System.Drawing.Size(53, 20);
             this.txtbItemToModifyId.TabIndex = 64;
@@ -2317,7 +2321,7 @@
             // 
             // btnRemoveItemToModify
             // 
-            this.btnRemoveItemToModify.Location = new System.Drawing.Point(96, 266);
+            this.btnRemoveItemToModify.Location = new System.Drawing.Point(39, 264);
             this.btnRemoveItemToModify.Name = "btnRemoveItemToModify";
             this.btnRemoveItemToModify.Size = new System.Drawing.Size(24, 23);
             this.btnRemoveItemToModify.TabIndex = 5;
@@ -2327,7 +2331,7 @@
             // 
             // btnAddItemToModify
             // 
-            this.btnAddItemToModify.Location = new System.Drawing.Point(7, 266);
+            this.btnAddItemToModify.Location = new System.Drawing.Point(9, 264);
             this.btnAddItemToModify.Name = "btnAddItemToModify";
             this.btnAddItemToModify.Size = new System.Drawing.Size(24, 23);
             this.btnAddItemToModify.TabIndex = 6;
@@ -2415,6 +2419,26 @@
             // 
             this.contextMenuStrip2.Name = "contextMenuStrip2";
             this.contextMenuStrip2.Size = new System.Drawing.Size(61, 4);
+            // 
+            // btnAddRange
+            // 
+            this.btnAddRange.Location = new System.Drawing.Point(69, 264);
+            this.btnAddRange.Name = "btnAddRange";
+            this.btnAddRange.Size = new System.Drawing.Size(50, 23);
+            this.btnAddRange.TabIndex = 70;
+            this.btnAddRange.Text = "Range";
+            this.btnAddRange.UseVisualStyleBackColor = true;
+            this.btnAddRange.Click += new System.EventHandler(this.btnAddRange_Click);
+            // 
+            // btnClearItems
+            // 
+            this.btnClearItems.Location = new System.Drawing.Point(127, 264);
+            this.btnClearItems.Name = "btnClearItems";
+            this.btnClearItems.Size = new System.Drawing.Size(50, 23);
+            this.btnClearItems.TabIndex = 71;
+            this.btnClearItems.Text = "Clear";
+            this.btnClearItems.UseVisualStyleBackColor = true;
+            this.btnClearItems.Click += new System.EventHandler(this.btnClearItems_Click);
             // 
             // ItemSpellHandler
             // 
@@ -2684,6 +2708,8 @@
         private System.Windows.Forms.TextBox txtbAddValue;
         private System.Windows.Forms.CheckBox chbKeepValue;
         private System.Windows.Forms.CheckBox chbAddToValue;
+        private System.Windows.Forms.Button btnAddRange;
+        private System.Windows.Forms.Button btnClearItems;
     }
 }
 

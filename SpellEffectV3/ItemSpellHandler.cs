@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Renci.SshNet.Messages;
 using Renci.SshNet.Security;
 using Stump.DofusProtocol.D2oClasses;
 using Stump.Server.WorldServer.Database.Items.Templates;
@@ -50,6 +51,12 @@ namespace SpellEffectV3
         {
             items_templates_itemIDTB.Focus();
 
+            // Add custom effects on top
+            var cValues = (CustomEffectEnum[])Enum.GetValues(typeof(CustomEffectEnum));
+            foreach (var custom in cValues) {
+                cmbPreviousEffect.Items.Add(custom);
+                cmbNewEffect.Items.Add(custom);
+            }
             
             var allValues = (Stump.DofusProtocol.Enums.EffectsEnum[])Enum.GetValues(typeof(Stump.DofusProtocol.Enums.EffectsEnum));
 
@@ -1167,8 +1174,12 @@ namespace SpellEffectV3
                 return;
 
             string selectedItem = cmbPreviousEffect.SelectedItem.ToString();
-            int selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
-            var t = listEffectsTuple[listStatsToChange.SelectedIndex];
+            int selectedEffectEnumID;
+            if (cmbPreviousEffect.SelectedItem is CustomEffectEnum)
+                selectedEffectEnumID = -1*(int)(CustomEffectEnum)Enum.Parse(typeof(CustomEffectEnum), selectedItem);
+            else
+                selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
+
             listEffectsTuple[listStatsToChange.SelectedIndex].previousEffect = selectedEffectEnumID;
 
             if (listEffectsTuple[listStatsToChange.SelectedIndex].bChangeEffect)
@@ -1182,8 +1193,12 @@ namespace SpellEffectV3
                 return;
 
             string selectedItem = cmbNewEffect.SelectedItem.ToString();
-            int selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
-            var t = listEffectsTuple[listStatsToChange.SelectedIndex];
+            int selectedEffectEnumID;
+            if (cmbNewEffect.SelectedItem is CustomEffectEnum)
+                selectedEffectEnumID = -1 * (int)(CustomEffectEnum)Enum.Parse(typeof(CustomEffectEnum), selectedItem);
+            else
+                selectedEffectEnumID = (int)(Stump.DofusProtocol.Enums.EffectsEnum)Enum.Parse(typeof(Stump.DofusProtocol.Enums.EffectsEnum), selectedItem);
+            
             listEffectsTuple[listStatsToChange.SelectedIndex].newEffect = selectedEffectEnumID;
 
             if (listEffectsTuple[listStatsToChange.SelectedIndex].bChangeEffect)
@@ -1199,7 +1214,35 @@ namespace SpellEffectV3
         }
 
         private void btnSave_Click(object sender, EventArgs e) {
-            var dict = listEffectsTuple.ToDictionary(obj => obj.previousEffect);
+            if(listEffectsTuple.Where(obj => obj.previousEffect > 0 && obj.bChangeEffect && obj.newEffect <= 0).Count() > 0) {
+                MessageBox.Show("Cannot have a normal effect linked to custom effect.\nAborting...");
+                return;
+            }
+            var dict = listEffectsTuple.Where(obj => obj.previousEffect > 0).ToDictionary(obj => obj.previousEffect);
+            foreach(var custom in listEffectsTuple.Where(obj => obj.previousEffect <= 0)) {
+                var templates = customEffects[-custom.previousEffect];
+                for (int i = 0; i < templates.Length; i++) {
+                    var template = custom.Copy();
+                    template.previousEffect = (int)templates[i];
+
+                    if (dict.ContainsKey(template.previousEffect)) {
+                        MessageBox.Show("Effect from CustomEffect " + (CustomEffectEnum)custom.previousEffect + " was already found.\nAborting...");
+                        return;
+                    }
+
+                    if (template.bChangeEffect) {
+                        if (template.newEffect > 0 || templates.Length != customEffects[-custom.newEffect].Length) {
+                            MessageBox.Show("Incompatible newEffect for Effect " + (CustomEffectEnum)custom.previousEffect + "\nAborting...");
+                            return;
+                        }
+
+                        template.newEffect = (int)customEffects[-custom.newEffect][i];
+                    }
+                    
+                    dict.Add(template.previousEffect, template);
+                }
+            }
+
             foreach(int itemId in listItemsId.Items) {
                 var templates = GetEffectInstance(itemId);
                 if (templates is null) {
@@ -1320,6 +1363,22 @@ namespace SpellEffectV3
 
             listEffectsTuple[listStatsToChange.SelectedIndex].addedValue = value;
         }
+
+        private void btnAddRange_Click(object sender, EventArgs e) {
+            using (var form = new AddRangeForm()) {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK) {
+                    for(int i = form.from; i <= form.to; i++) {
+                        listItemsId.Items.Add(i);
+                    }
+                    listItemsId.SelectedIndex = listItemsId.Items.Count - 1;
+                }
+            }
+        }
+
+        private void btnClearItems_Click(object sender, EventArgs e) {
+            listItemsId.Items.Clear();
+        }
         #endregion
 
         class StatsToModifyTemplate {
@@ -1329,6 +1388,73 @@ namespace SpellEffectV3
             public bool bKeepValue;
             public bool bAddValue;
             public int addedValue;
+
+            public StatsToModifyTemplate Copy() {
+                return new StatsToModifyTemplate {
+                    previousEffect = previousEffect,
+                    bChangeEffect = bChangeEffect,
+                    newEffect = newEffect,
+                    bKeepValue = bKeepValue,
+                    bAddValue = bAddValue,
+                    addedValue = addedValue
+                };
+            }
         }
+
+        enum CustomEffectEnum {
+            CEffect_ElementPoints = 0,
+            CEffect_ElementDamage,
+            CEffect_ElementResistance,
+            CEffect_ElementReduction,
+            CEffect_Agility,
+            CEffect_Chance,
+            CEffect_Intelligence,
+            CEffect_Force
+        }
+
+        Stump.DofusProtocol.Enums.EffectsEnum[][] customEffects = new Stump.DofusProtocol.Enums.EffectsEnum[][]{
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAgility,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddChance,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddIntelligence,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddStrength
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAirDamageBonus,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddWaterDamageBonus,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddFireDamageBonus,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddEarthDamageBonus
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAirResistPercent,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddWaterResistPercent,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddFireResistPercent,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddEarthResistPercent,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddNeutralResistPercent
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAirElementReduction,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddWaterElementReduction,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddFireElementReduction,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddEarthElementReduction,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddNeutralElementReduction
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAgility,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddAirDamageBonus
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddChance,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddWaterDamageBonus
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddIntelligence,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddFireDamageBonus
+            },
+            new Stump.DofusProtocol.Enums.EffectsEnum[] {
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddStrength,
+                Stump.DofusProtocol.Enums.EffectsEnum.Effect_AddEarthDamageBonus
+            },
+        };
     }
 }

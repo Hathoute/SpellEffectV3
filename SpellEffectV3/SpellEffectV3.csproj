@@ -102,6 +102,12 @@
     <Compile Include="AuthentificationForm.Designer.cs">
       <DependentUpon>AuthentificationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddRangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddRangeForm.Designer.cs">
+      <DependentUpon>AddRangeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormatterExtensions.cs" />
     <Compile Include="FrmAbout.cs">
       <SubType>Form</SubType>
@@ -122,6 +128,9 @@
     <Compile Include="SpellLevelTemplate.cs" />
     <EmbeddedResource Include="AuthentificationForm.resx">
       <DependentUpon>AuthentificationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddRangeForm.resx">
+      <DependentUpon>AddRangeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmAbout.resx">
       <DependentUpon>FrmAbout.cs</DependentUpon>
